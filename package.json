@@ -1,0 +1,20 @@
+{
+  "name": "mychat",
+  "version": "1.0.0",
+  "description": "websocket",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "websocket"
+  ],
+  "author": "fwh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0",
+    "ioredis": "^2.4.2",
+    "socket.io": "^1.7.1",
+    "socket.io-redis": "^2.0.1"
+  }
+}

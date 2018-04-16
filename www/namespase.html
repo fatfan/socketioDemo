@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>chat mall</title>
+</head>
+<body>
+<div>
+	<h1>hello world</h1>
+	<div>
+		<p id="tips"></p>
+		<p id="welcome"></p>
+		<div id="msgList">
+			
+		</div>
+	</div>
+	<input type="text" name="comment" id="comment" value="请输入评论...">
+	<select id="group">
+		<option value="chat">chat</option>
+		<option value="news">news</option>
+	</select>
+	<button id="sendBtn">发送</button>
+	<!-- <button id="sendBtn">发送</button> -->
+</div>
+<script type="text/javascript" src="js/socket.io.js"></script>
+<script type="text/javascript">
+	var num = 0;
+	var socket=io.connect();//与服务器进行连接
+    socket.on('connect', function() {
+        document.getElementById('tips').textContent = ++num + ' visitors online';
+        socket.emit('login', "guestor");
+    });
+    socket.on('newMsg', function(nickname, msg, color) {
+    	console.log("newMsg");
+        document.getElementById('msgList').innerHTML += "<p>"+msg+"</p>";
+    });
+	var chat = io.connect('http://localhost/chat'),
+		news = io.connect('http://localhost/news');
+  
+	chat.on('connect', function () {
+		chat.emit('hi!');
+	});
+  chat.on('chat', function (msg) {
+    chat.emit('hi!');
+    console.log(msg);
+  });
+  
+  news.on('news', function (msg) {
+    news.emit('woot');
+    console.log(msg);
+  });
+  var button=document.getElementById('sendBtn');
+	button.onclick=function(){
+		var group = document.getElementById('group').value;
+		if (group=="chat") {
+			chat.emit('postMsg', "test chat");//发送一个名为foo的事件，并且传递一个字符串数据‘hello’
+		} else if(group=="news"){
+			news.emit('postMsg', "test news");
+		}
+	}
+</script>
+</body>
+</html>

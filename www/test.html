@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>chat mall</title>
+</head>
+<body>
+<div>
+	<h1>hello world</h1>
+	<div>
+		<p id="tips"></p>
+		<p id="welcome"></p>
+		<div id="msgList">
+			
+		</div>
+	</div>
+	<input type="text" name="comment" id="comment" value="请输入评论...">
+	<button id="sendBtn">发送</button>
+	<!-- <button id="sendBtn">发送</button> -->
+</div>
+<script type="text/javascript" src="js/socket.io.js"></script>
+<script type="text/javascript">
+	var num = 0;
+	var socket=io.connect();//与服务器进行连接
+        socket.on('connect', function() {
+            document.getElementById('tips').textContent = ++num + ' visitors online';
+            socket.emit('login', "guestor");
+        });
+        socket.on('newMsg', function(nickname, msg, color) {
+        	console.log("newMsg");
+            document.getElementById('msgList').innerHTML += "<p>"+msg+"</p>";
+        });
+        socket.on('loginSuccess', function(msg) {
+            console.log("loginSuccess");
+            document.getElementById('welcome').innerHTML = "welcome, "+msg;
+        });
+	var button=document.getElementById('sendBtn');
+	button.onclick=function(){
+		var comment = document.getElementById('comment').value;
+		for (var i = 0; i < 1; i++) {
+			socket.emit('postMsg', "test");//发送一个名为foo的事件，并且传递一个字符串数据‘hello’	
+		}
+		
+	}
+</script>
+</body>
+</html>

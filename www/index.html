@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>chat mall</title>
+</head>
+<body>
+<div>
+	<div id="loginForm" style="display: none;">
+		<input type="text" id="username" name="username" value="">
+		<input type="button" id="btnLogin" value="登录">
+	</div>
+	<h1>hello world</h1>
+	<h2>在线用户</h2>
+	<select id="userList"></select>
+	<input type="text" id="privateMsg" name="privateMsg" value="">
+	<input type="button" id="btnSingleChat" value="私聊">
+	<div>
+		<p id="tips"></p>
+		<p id="welcome"></p>
+		<div id="msgList"></div>
+	</div>
+	<input type="text" name="comment" id="comment" value="请输入评论...">
+	<button id="sendBtn">群发</button>
+	<input type="text" name="randomMsg" id="randomMsg" value="">
+	<button id="btnTalkToBoss">对话企业主</button>
+</div>
+<script type="text/javascript" src="js/socket.io.js"></script>
+<script type="text/javascript">
+	var num = 0;
+	var socket=io.connect();//与服务器进行连接
+        socket.on('connect', function() {
+            document.getElementById('tips').textContent = ++num + ' visitors online';
+            document.getElementById('loginForm').style.display = "block";
+            //socket.emit('login', "guestor");
+        });
+        socket.on('newMsg', function(fromUser, msg, color) {
+        	console.log("newMsg");
+            document.getElementById('msgList').innerHTML += "<p>"+(fromUser?"form:"+fromUser+": ":"")+msg+"</p>";
+        });
+        socket.on('msgOK', function(toUser,msg) {
+        	console.log("msgOK");
+            document.getElementById('msgList').innerHTML += "<p class='tip'>"+(toUser?"to:"+toUser+": ":"")+msg+"</p>";
+        });
+        socket.on('loginSuccess', function(userList) {
+            console.log("loginSuccess: "+ userList);
+            document.getElementById('tips').textContent = ++num + ' visitors online';
+            document.getElementById('welcome').innerHTML = "welcome, new user";
+            var str = "";
+            //var userList = JSON.parse(msg);
+            for (var i = 0; i < userList.length; i++) {
+            	str += '<option value="'+userList[i]+'">'+userList[i]+'</option>';
+            }
+            document.getElementById('userList').innerHTML = str;
+        });
+	var button=document.getElementById('sendBtn');
+	button.onclick=function(){
+		var comment = document.getElementById('comment').value;
+		socket.emit('postMsg', comment);//发送一个名为foo的事件，并且传递一个字符串数据‘hello’
+	}
+	var btnLogin=document.getElementById('btnLogin');
+	btnLogin.onclick=function(){
+		var username = document.getElementById('username').value;
+		socket.emit('login', username);
+	}
+	var btnSingleChat=document.getElementById('btnSingleChat');
+	btnSingleChat.onclick=function(){
+		var toUser = document.getElementById('userList').value;
+		var fromUser = document.getElementById('username').value;
+		var privateMsg = document.getElementById('privateMsg').value;
+		socket.emit('privateMsg', fromUser, toUser, privateMsg);
+	}
+</script>
+</body>
+</html>
